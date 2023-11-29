@@ -1,0 +1,121 @@
+<!doctype html>
+<head>
+    <style>
+        body, html {
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+        }
+        body {
+            position: relative;
+        }
+        .gopt {
+            height: 100vh;
+            width: 100%;
+        }
+        #gamble_continer {
+            height: fit-content;
+            transition: transform 5s cubic-bezier(.39,1,.93,1);
+            /* transform: rotate(); */
+        }
+        #you_win {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        .balloon {
+            position: absolute;
+            width: 150px;
+        }
+        @keyframes fall {
+            0% { top: -300px;}
+            100% { top: 110%;}
+        }
+    </style>
+</head>
+<body>
+    <div id="gamble_continer"></div>
+    <div id="you_win">
+        <h1>you win :3</h1>
+    </div>
+</body>
+<script>
+    const OPTCOUNT = 11
+    const container = document.getElementById('gamble_continer')
+    const max_balloons = 250
+    x=0
+    while (x < OPTCOUNT) {
+        var color = '#'+Math.floor(Math.random()*16777215).toString(16);
+        var div = document.createElement("div");
+        div.classList.add('gopt')
+        div.style.backgroundColor = color
+        // document.body.appendChild(div);
+        container.appendChild(div);
+        x++
+        console.log(':3')
+    }
+
+    function random_rotation() {
+        return Math.floor(Math.random() * 360)+'deg'
+    }
+
+    function random_duration() {
+        min = 2
+        max = 5
+        return Math.floor(Math.random() * (max - min) + min)+'s'
+    }
+    function random_offset(a='x') {
+        min = -150
+        // max = window.innerWidth
+        if (a == 'y') {return Math.floor(Math.random() * (window.innerHeight - min) + min)+'px' }
+        else if (a == 'x') {return Math.floor(Math.random() * (window.innerWidth - min) + min)+'px' }        
+    }
+
+    function top_offset() {
+        // return random_offset('y')
+        return '-600px'
+    }
+
+    function animation_end_del(event) {
+        event.target.remove()
+    }
+
+    function create_random_balloon() {
+        var element = document.createElement('img')
+        element.classList.add('balloon')
+        element.src = 'media/balloon.png'
+        element.style.filter = 'hue-rotate('+random_rotation()+')'
+        element.style.transform = 'rotate('+random_rotation()+')'
+        element.style.left = random_offset()
+        element.style.top = top_offset()
+        element.style.animation = 'fall '+random_duration()+ ' linear'
+        element.onanimationend = animation_end_del
+        return element
+    }
+
+    function run(a = 90) {
+        container.offsetHeight
+        // container.style.transform = 'translateY(-'+a+'%)'
+        container.style.transform = 'translateY(-'+(container.offsetHeight-window.innerHeight)+'px)'
+    }
+    function transition_ended() {
+        document.getElementById('you_win').style.display = 'flex'
+        // let counter = 0;
+        const balloon_gen = () => {
+            document.body.appendChild(create_random_balloon())
+            // counter++;
+            // if (counter === max_balloons) { clearInterval(intervalId); }
+        };
+        const intervalId = setInterval(balloon_gen, 125);
+    }
+    document.onclick = run
+    container.ontransitionend = transition_ended
+</script>
